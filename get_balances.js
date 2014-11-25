@@ -16,9 +16,9 @@ var options = {
 
 remote.connect(function() {
     /* remote connected */
-    remote.requestServerInfo(function(error, info) {
-        var request = remote.requestAccountInfo(options, function(error, info) {
-                if (error) console.log(error);
+    remote.requestServerInfo(function(err, info) {
+        var request = remote.requestAccountInfo(options, function(err, info) {
+                if (err) console.log(err);
                 else
                 {
                         main(args);
@@ -37,8 +37,8 @@ function main(account_addresses) {
 
 function get_accounts_info(account_addresses) {
     accounts = {}
-    async.each(account_addresses, get_account_info.bind(null, accounts), function(error) {
-            if(error) callback(error);
+    async.each(account_addresses, get_account_info.bind(null, accounts), function(err) {
+            if(err) callback(err);
             else callback(null, accounts);
     });
 }
@@ -54,8 +54,31 @@ function get_account_info(accounts, curr_account, cb_acc_info) {
         //function(callback) {
         //    get_acc_lines(curr_account, assign_acc_lines.bind(null, accounts, curr_account, callback));
         //}
-    ], function (error) {
-        if(error) cb_acc_info(error);
+    ], function (err) {
+        if(err) cb_acc_info(err);
         else cb_acc_info();
+    });
+}
+
+// Returns account balance
+function get_acc_bal(acc_address, callback) {
+    var options = {
+        account: account_address,
+        ledger: 'validated'
+    };
+    var request = remote.requestAccountInfo(options, function(err, info) {
+        if (err) {
+            callback(err);
+        }
+        else {
+            var data = '';
+            info.on("data", function(chunk) {
+                data += chunk;
+            });
+            info.on('end',function() {
+                var obj = JSON.parse(data);
+                callback(null, obj.account_data.Balance);
+            })            
+        }
     });
 }
