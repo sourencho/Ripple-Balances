@@ -35,7 +35,7 @@ function main(account_addresses) {
     //print_totals(total_sums);
 }
 
-function get_accounts_info(account_addresses) {
+function get_accounts_info(account_addresses, callback) {
     accounts = {}
     async.each(account_addresses, get_account_info.bind(null, accounts), function(err) {
             if(err) callback(err);
@@ -50,7 +50,8 @@ function get_account_info(accounts, curr_account, cb_acc_info) {
         // Get account XRP balance
         function(callback) {
             get_acc_bal(curr_account, assign_acc_bal.bind(null, accounts, curr_account, callback));
-        }//,
+        }
+        //,
         // Get account lines
         //function(callback) {
         //    get_acc_lines(curr_account, assign_acc_lines.bind(null, accounts, curr_account, callback));
@@ -64,7 +65,7 @@ function get_account_info(accounts, curr_account, cb_acc_info) {
 // Returns account balance
 function get_acc_bal(acc_address, callback) {
     var options = {
-        account: account_address,
+        account: acc_address,
         ledger: 'validated'
     };
     var request = remote.requestAccountInfo(options, function(err, info) {
@@ -72,14 +73,11 @@ function get_acc_bal(acc_address, callback) {
             callback(err);
         }
         else {
-            var data = '';
-            info.on("data", function(chunk) {
-                data += chunk;
-            });
-            info.on('end',function() {
-                var obj = JSON.parse(data);
-                callback(null, obj.account_data.Balance);
-            })            
+            balance = {};
+            balance.currency = "XRP"
+            balance.value = info.account_data.Balance/1000000.0
+            balance.counterparty = ""
+            callback(null, balance);      
         }
     });
 }
@@ -88,10 +86,7 @@ function get_acc_bal(acc_address, callback) {
 function assign_acc_bal(accounts, curr_account, callback, error, balance) {
     if (error) console.log(error);
     else {
-        drops_amount = balances;
-        drops_to_xrp = 1.0/100000.0
-        xrp_amount = drops_amount * drops_to_xrp
-        accounts[curr_account].balance.push(xrp)
-        callback(null); 
+        accounts[curr_account].balances.push(balance)
+        callback(null);
     }
 }
