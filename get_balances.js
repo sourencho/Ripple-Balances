@@ -108,8 +108,9 @@ function get_acc_lines(acc_address, callback) {
         }
         else {
             balances = []
-            for (var curr_bal in info.lines)
+            for (var i = 0; i < info.lines.length; i++)
             {
+                curr_bal = info.lines[i];
                 balance = {};
                 balance.currency = curr_bal.currency;
                 balance.value = curr_bal.balance;
