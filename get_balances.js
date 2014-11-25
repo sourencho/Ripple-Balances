@@ -12,10 +12,8 @@ var remote = new Remote({
 remote.connect(function() {
     /* remote connected */
     remote.requestServerInfo(function(err, info) {
-        var request = remote.requestAccountInfo(options, function(err, info) {
-                if (err) console.log(err);
-                else main(args, remote);
-        });
+        if (err) console.log(err);
+        else main(args, remote);
     });
 });
 
