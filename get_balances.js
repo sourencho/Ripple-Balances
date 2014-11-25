@@ -25,11 +25,11 @@ remote.connect(function() {
 });
 
 function main(account_addresses) {
-    async.waterfall([
+    async.series([
         function(callback) {
             get_accounts_info(account_addresses, callback);
         },
-        function(accounts, callback) {
+        function(callback) {
             calculate_totals(accounts, callback)
         }
     ], function (err, result) {
@@ -70,7 +70,7 @@ function get_account_info(accounts, curr_account, cb_acc_info) {
     });
 }
 
-// Returns account balance
+// Returns account balance object
 function get_acc_bal(acc_address, callback) {
     var options = {
         account: acc_address,
@@ -90,7 +90,7 @@ function get_acc_bal(acc_address, callback) {
     });
 }
 
-// Returns account balance
+// Returns account line balances array
 function get_acc_lines(acc_address, callback) {
     var options = {
         account: acc_address,
@@ -101,12 +101,16 @@ function get_acc_lines(acc_address, callback) {
             callback(err);
         }
         else {
-            console.log(info)
-            balance = {};
-            balance.currency = "XRP"
-            balance.value = info.account_data.Balance/1000000.0
-            balance.counterparty = ""
-            callback(null, balance);      
+            blanaces = []
+            for (var curr_bal in info.lines)
+            {
+                balance = {};
+                balance.currency = curr_bal.currency;
+                balance.value = curr_bal.balance;
+                balance.counterparty = curr_bal.account;
+                blanaces.push(balance)
+            }
+            callback(null, blanaces);
         }
     });
 }
@@ -120,7 +124,29 @@ function assign_acc_bal(accounts, curr_account, callback, error, balance) {
     }
 }
 
+// Assigns balances to account in accounts
+function assign_acc_lines(accounts, curr_account, callback, error, balances) {
+    if (error) console.log(error);
+    else {
+        for (var i = 0; i < balances.length; i++) {
+            accounts[curr_account].balances.push(balances[i])
+        }
+        callback(null, accounts);
+    }
+}
+
+// Retunrs on array of currencies each with an aggregate sum
 function calculate_totals(accounts, callback)
 {
-    callback(null, accounts)
+    var total_sums = {};
+    for (var i = 0; i < accounts[account].balances.length; i++) {
+        // Keep track of aggregated value
+        if (curr_currency in total_sums){
+            total_sums[curr_currency] += parseFloat(curr_value);
+        }
+        else {
+            total_sums[curr_currency] = parseFloat(curr_value);
+        }
+    }
+    callback(null, total_sums)
 }
