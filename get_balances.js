@@ -28,7 +28,13 @@ remote.connect(function() {
 });
 
 function main(account_addresses) {
-    accounts = get_accounts_info(account_addresses);
+    async.waterfall([
+        get_accounts_info(account_addresses, callback),
+        calculate_totals(accounts, callback)
+    ], function (err, result) {
+        console.log(result)   
+    });
+    
     //total_sums = calculate_totals(accounts);
 
     //print_accounts_info(accounts);
@@ -37,7 +43,8 @@ function main(account_addresses) {
 
 function get_accounts_info(account_addresses, callback) {
     accounts = {}
-    async.each(account_addresses, get_account_info.bind(null, accounts), function(err) {
+    async.each(account_addresses, get_account_info.bind(null, accounts), 
+        function(err) {
             if(err) callback(err);
             else callback(null, accounts);
     });
@@ -87,6 +94,12 @@ function assign_acc_bal(accounts, curr_account, callback, error, balance) {
     if (error) console.log(error);
     else {
         accounts[curr_account].balances.push(balance)
-        callback(null);
+        console.log(callback)
+        callback(null, accounts);  
     }
+}
+
+function calculate_totals(accounts, callback)
+{
+    callback(null, accounts)
 }
