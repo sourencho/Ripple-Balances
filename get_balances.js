@@ -19,20 +19,22 @@ remote.connect(function() {
     remote.requestServerInfo(function(err, info) {
         var request = remote.requestAccountInfo(options, function(err, info) {
                 if (err) console.log(err);
-                else
-                {
-                        main(args);
-                }
+                else main(args);
         });
     });
 });
 
 function main(account_addresses) {
     async.waterfall([
-        get_accounts_info(account_addresses, callback),
-        calculate_totals(accounts, callback)
+        function(callback) {
+            get_accounts_info(account_addresses, callback);
+        },
+        function(accounts, callback) {
+            calculate_totals(accounts, callback)
+        }
     ], function (err, result) {
-        console.log(result)   
+        if (err) console.log(err);
+        else console.log(result);
     });
     
     //total_sums = calculate_totals(accounts);
@@ -57,12 +59,11 @@ function get_account_info(accounts, curr_account, cb_acc_info) {
         // Get account XRP balance
         function(callback) {
             get_acc_bal(curr_account, assign_acc_bal.bind(null, accounts, curr_account, callback));
-        }
-        //,
+        },
         // Get account lines
-        //function(callback) {
-        //    get_acc_lines(curr_account, assign_acc_lines.bind(null, accounts, curr_account, callback));
-        //}
+        function(callback) {
+            get_acc_lines(curr_account, assign_acc_lines.bind(null, accounts, curr_account, callback));
+        }
     ], function (err) {
         if(err) cb_acc_info(err);
         else cb_acc_info();
@@ -89,12 +90,32 @@ function get_acc_bal(acc_address, callback) {
     });
 }
 
+// Returns account balance
+function get_acc_lines(acc_address, callback) {
+    var options = {
+        account: acc_address,
+        ledger: 'validated'
+    };
+    var request = remote.requestAccountLines(options, function(err, info) {
+        if (err) {
+            callback(err);
+        }
+        else {
+            console.log(info)
+            balance = {};
+            balance.currency = "XRP"
+            balance.value = info.account_data.Balance/1000000.0
+            balance.counterparty = ""
+            callback(null, balance);      
+        }
+    });
+}
+
 // Assigns balance to account in accounts
 function assign_acc_bal(accounts, curr_account, callback, error, balance) {
     if (error) console.log(error);
     else {
         accounts[curr_account].balances.push(balance)
-        console.log(callback)
         callback(null, accounts);  
     }
 }
