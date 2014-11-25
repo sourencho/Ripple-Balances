@@ -9,22 +9,18 @@ var remote = new Remote({
     servers: [ 'wss://s1.ripple.com:443' ]
 });
 
-var options = {
-    account: 'rBTC1BgnrukYh9gfE8uL5dqnPCfZXUxiho',
-    ledger: 'validated'
-};
-
 remote.connect(function() {
     /* remote connected */
     remote.requestServerInfo(function(err, info) {
         var request = remote.requestAccountInfo(options, function(err, info) {
                 if (err) console.log(err);
-                else main(args);
+                else main(args, remote);
         });
     });
 });
 
-function main(account_addresses) {
+// Main function that get's account info and prints it out
+function main(account_addresses, remote) {
     async.waterfall([
         function(callback) {
             get_accounts_info(account_addresses, callback);
@@ -33,16 +29,16 @@ function main(account_addresses) {
             calculate_totals(accounts, callback)
         }
     ], function (err, result) {
-        if (err) console.log(err);
-        else console.log(result);
+        if (err) callback(err);
+        else {
+            output_results(result);
+            remote.disconnect();
+        }
     });
-    
-    //total_sums = calculate_totals(accounts);
-
-    //print_accounts_info(accounts);
-    //print_totals(total_sums);
 }
 
+// Returns accounts object of this form: 
+//  { acc_addr1: [balance1, balance2, ... ], acc_addr2: [balance1, balance2, ... ], ... }
 function get_accounts_info(account_addresses, callback) {
     accounts = {}
     async.map(account_addresses, get_account_info, function(err, account_array) {
@@ -122,9 +118,8 @@ function get_acc_lines(acc_address, callback) {
     });
 }
 
-// Retunrs on array of currencies each with an aggregate sum
-function calculate_totals(accounts, callback)
-{
+// Returns an array in this form: [accounts, total_sums]
+function calculate_totals(accounts, callback){
     var total_sums = {};
     for (var account in accounts)
         for (var i = 0; i < accounts[account].length; i++) {
@@ -139,4 +134,32 @@ function calculate_totals(accounts, callback)
             }
         }
     callback(null, [accounts, total_sums])
+}
+
+// Outputs results
+function output_results(results) {
+    accounts = results[0];
+    total_sums = results[1];
+
+    // Output accounts
+    for (var account in accounts) {
+        // Print out current account
+        console.log("Account: " + account);
+        for (var i = 0; i < accounts[account].length; i++) {
+            // Print out current balance
+            curr_counterp = accounts[account][i].counterparty
+            curr_currency = accounts[account][i].currency
+            curr_value = accounts[account][i].value
+            console.log("\tCounterparty: " + curr_counterp);
+            console.log("\tCurrency: " + curr_currency);
+            console.log("\tValue: " + curr_value);
+            console.log();
+        }
+    }
+
+    // Output total sums
+    console.log("Aggregated sums:");
+    for (var currency in total_sums) {
+        console.log("\t" + currency + ": " + total_sums[currency]);
+    }
 }
