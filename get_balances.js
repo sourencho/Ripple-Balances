@@ -85,13 +85,13 @@ function get_acc_bal(acc_address, callback) {
 }
 
 // Assigns balance to account in accounts
-function assign_acc_name(accounts, curr_account, callback, error, balance) {
+function assign_acc_bal(accounts, curr_account, callback, error, balance) {
     if (error) console.log(error);
     else {
         drops_amount = balances;
         drops_to_xrp = 1.0/100000.0
         xrp_amount = drops_amount * drops_to_xrp
         accounts[curr_account].balance.push(xrp)
-        callback(null);
+        callback(null); 
     }
 }
