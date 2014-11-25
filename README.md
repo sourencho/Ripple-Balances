@@ -3,13 +3,13 @@ Ripple-Balances
 
 ###Dependencies:
 
-  npm install async
+  `npm install async`
   
-  npm install ripple-lib
+  `npm install ripple-lib`
   
 ###Run:
 
-  node get_balances.js [ACCOUNT_ADDRESS...]
+  `node get_balances.js [ACCOUNT_ADDRESS...]`
   
   note: you can input several account addresses
   
