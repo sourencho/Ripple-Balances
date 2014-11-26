@@ -1,0 +1,14 @@
+{
+  "name": "get_balances",
+  "description": "Outputs each accounts balances and also an aggregate sum for each currency present in these accounts.",
+  "author": "Souren Papazian <souren@papazian.info>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:SourenP/Ripple-Balances.git"
+  },
+  "dependencies": {
+    "async": ">= 0.9.0",
+    "ripple-lib": ">= 0.9.3"
+  },
+  "engine": "node 0.10.33"
+}
