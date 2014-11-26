@@ -10,15 +10,13 @@ var remote = new Remote({
 
 if (args == 0) {
     console.log("Usage: get_balances.js [ACCOUNT_ADDRESS...]");
-}
-else {
+} else {
     remote.connect(function() {
         /* remote connected */
         remote.requestServerInfo(function(err, info) {
             if (err) { 
                 console.log(err);
-            }
-            else {
+            } else {
                 main(args, remote);
             }
         });
@@ -38,8 +36,7 @@ function main(account_addresses, remote) {
         if (err) {
             console.log(err);
             remote.disconnect();
-        }
-        else {
+        } else {
             output_results(result);
             remote.disconnect();
         }
@@ -53,8 +50,7 @@ function get_accounts_info(account_addresses, callback) {
     async.map(account_addresses, get_account_info, function(err, account_array) {
             if(err) {
                 callback(err);
-            }
-            else {
+            } else {
                 for (var i = 0; i < account_array.length; i++) {
                     accounts[account_array[i][0]] = account_array[i][1];
                 }
@@ -77,8 +73,7 @@ function get_account_info(curr_account, cb_acc_info) {
     ], function (err, balances) {
         if(err) {
             cb_acc_info(err);
-        }
-        else {
+        } else {
             total_balances = balances[0].concat(balances[1]);
             cb_acc_info(null, [curr_account, total_balances]);
         }
@@ -94,8 +89,7 @@ function get_acc_bal(acc_address, callback) {
     var request = remote.requestAccountInfo(options, function(err, info) {
         if (err) {
             callback(err);
-        }
-        else {
+        } else {
             balance = {};
             balance.currency = "XRP";
             balance.value = info.account_data.Balance/1000000.0;
@@ -114,8 +108,7 @@ function get_acc_lines(acc_address, callback) {
     var request = remote.requestAccountLines(options, function(err, info) {
         if (err) {
             callback(err);
-        }
-        else {
+        } else {
             balances = []
             for (var i = 0; i < info.lines.length; i++)
             {
@@ -141,8 +134,7 @@ function calculate_totals(accounts, callback){
             // Keep track of aggregated value
             if (curr_currency in total_sums){
                 total_sums[curr_currency] += parseFloat(curr_value);
-            }
-            else {
+            } else {
                 total_sums[curr_currency] = parseFloat(curr_value);
             }
         }
