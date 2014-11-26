@@ -3,9 +3,10 @@ Ripple-Balances
 
 ###Dependencies:
 
-  `npm install async`
+  Run: `npm install`
   
-  `npm install ripple-lib`
+  Uses: async and ripple-lib
+  
   
 ###Run:
 
