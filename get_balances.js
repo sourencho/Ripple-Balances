@@ -5,21 +5,25 @@ var args = process.argv.slice(2);
 var Remote = require('ripple-lib').Remote;
 
 var remote = new Remote({
-    // see the API Reference for available options
     servers: [ 'wss://s1.ripple.com:443' ]
 });
 
-remote.connect(function() {
-    /* remote connected */
-    remote.requestServerInfo(function(err, info) {
-        if (err) { 
-            console.log(err);
-        }
-        else {
-            main(args, remote);
-        }
+if (args == 0) {
+    console.log("Usage: get_balances.js [ACCOUNT_ADDRESS...]");
+}
+else {
+    remote.connect(function() {
+        /* remote connected */
+        remote.requestServerInfo(function(err, info) {
+            if (err) { 
+                console.log(err);
+            }
+            else {
+                main(args, remote);
+            }
+        });
     });
-});
+}
 
 // Main function that get's account info and prints it out
 function main(account_addresses, remote) {
