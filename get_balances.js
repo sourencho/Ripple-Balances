@@ -26,20 +26,15 @@ if (args == 0) {
 // Main function that get's account info and prints it out
 function main(account_addresses, remote) {
     async.waterfall([
-        function(callback) {
-            get_accounts_info(account_addresses, callback);
-        },
-        function(accounts, callback) {
-            calculate_totals(accounts, callback);
-        }
+        get_accounts_info.bind(null, account_addresses),
+        calculate_totals
     ], function (err, result) {
         if (err) {
             console.log(err);
-            remote.disconnect();
         } else {
             output_results(result);
-            remote.disconnect();
         }
+        remote.disconnect();
     });
 }
 
@@ -48,14 +43,14 @@ function main(account_addresses, remote) {
 function get_accounts_info(account_addresses, callback) {
     accounts = {};
     async.map(account_addresses, get_account_info, function(err, account_array) {
-            if(err) {
-                callback(err);
-            } else {
-                for (var i = 0; i < account_array.length; i++) {
-                    accounts[account_array[i][0]] = account_array[i][1];
-                }
-                callback(null, accounts);
+        if(err) {
+            callback(err);
+        } else {
+            for (var i = 0; i < account_array.length; i++) {
+                accounts[account_array[i][0]] = account_array[i][1];
             }
+            callback(null, accounts);
+        }
     });
 }
 
@@ -117,7 +112,8 @@ function get_acc_lines(acc_address, callback) {
                 balance.currency = curr_bal.currency;
                 balance.value = curr_bal.balance;
                 balance.counterparty = curr_bal.account;
-                balances.push(balance);
+                if (parseFloat(balance.value) != 0.0)
+                    balances.push(balance);
             }
             callback(null, balances);
         }
