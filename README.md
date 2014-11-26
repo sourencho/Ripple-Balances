@@ -17,6 +17,8 @@ Ripple-Balances
 
   Given account addresses, the program will output each accounts balances and also an aggregate sum for each currency present in these accounts.
   
+  Balances of zero will not be outputted as to make the output less cluttered.
+  
 ###Implementation:
 
   I used async to deal with the various callbacks. It prevented nested (pyramid) callbacks.
