@@ -19,12 +19,10 @@ Ripple-Balances
   
 ###Implementation:
 
-  I used async to deal with the various callbacks and it helped to make my code look less pyramid-y.
+  I used async to deal with the various callbacks. It prevented nested (pyramid) callbacks.
   The code is fairly simple, it makes parallel requests to the ripple server and collects the information about the accounts inputed.
   After storing the data collected, the total sum is calculated and all the data is outputted.
   
   
-  This took me about 4 hours (most of which was spent on figuring out how node and callbacks work because I had very little experience in node)
+  This took me about 4 hours, most of which was spent on figuring out how node and callbacks work because I had very little experience beforehand.
   
-  
-  note: The commits may indicate that I worked longer, but that might be because of breaks.
