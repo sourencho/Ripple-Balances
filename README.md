@@ -27,5 +27,5 @@ Ripple-Balances
   After storing the data collected, the total sum is calculated and all the data is outputted.
   
   
-  This took me about 4 hours, most of which was spent on figuring out how node and callbacks work because I had very little experience beforehand.
+  The assignment took about 4 hours, most of which was spent on figuring out how node and callbacks work because I had very little experience beforehand.
   
